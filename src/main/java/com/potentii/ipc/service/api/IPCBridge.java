@@ -25,6 +25,23 @@ public class IPCBridge{
 		this.source = source;
 		this.target = target;
 	}
+	
+	
+	
+	private String processInput(String input, Processor<String, String> messageProcessor) {
+		String responseJson;
+		
+		try {
+			responseJson = messageProcessor.process(input);
+		} catch (RequestParseException e) {
+			responseJson = "{\"error\":\"Not expected error\"}"; // TODO
+		}
+		
+		responseJson += "\\n" + END_MESSAGE_DELIMITER + "\\n";
+		
+		return responseJson;
+	}
+	
 
 
 	/**
@@ -68,22 +85,15 @@ public class IPCBridge{
 		while(listening){
 
 			final String inputData = scanner.next();
-			String responseJson;
 			
-			try {
-				responseJson = messageProcessor.process(inputData);
-			} catch (RequestParseException e) {
-				responseJson = "{\"error\":\"Not expected error\"}"; // TODO
-			}
-			
-			target.print(responseJson);
+			target.print(processInput(inputData, messageProcessor));
 		}
 		
 		scanner.close();
 	}
 	
 	
-	
+		
 	public void stopListening(){
 		// *It doesn't necessarily will stop listening immediately:
 		listening = false;
