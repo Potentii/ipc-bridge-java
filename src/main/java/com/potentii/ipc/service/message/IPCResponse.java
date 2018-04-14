@@ -41,13 +41,12 @@ public class IPCResponse implements Serializable{
 		this.content = content;
 	}
 	public <T> void json(T obj) throws IOException {		
-		this.content = (content == null) 
+		content = (obj == null) 
 				? null 
 				: new ObjectMapper().writeValueAsString(obj);
 	}
 	
-	
-	
+		
 	
 	public String getId() {
 		return id;
@@ -55,5 +54,9 @@ public class IPCResponse implements Serializable{
 	
 	public Throwable getError() {
 		return error;
+	}
+
+	public Object getContent() {
+		return content;
 	}
 }

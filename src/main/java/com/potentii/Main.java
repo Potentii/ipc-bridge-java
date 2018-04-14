@@ -10,7 +10,7 @@ public class Main{
 		bridge.listen((req, res) -> {
 			String operation = String.valueOf(req.headers().get("operation"));
 			
-			//System.out.println(operation);
+			res.text(operation);
 		});
 	}
 	

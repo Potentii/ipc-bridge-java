@@ -37,7 +37,7 @@ public class IPCBridge{
 			responseJson = "{\"error\":\"Not expected error\"}"; // TODO
 		}
 		
-		responseJson += "\\n" + END_MESSAGE_DELIMITER + "\\n";
+		responseJson += "\n" + END_MESSAGE_DELIMITER + "\n";
 		
 		return responseJson;
 	}
