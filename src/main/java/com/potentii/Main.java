@@ -8,7 +8,7 @@ public class Main{
 		IPCBridge bridge = new IPCBridge(System.in, System.out);
 		
 		bridge.listen((req, res) -> {
-			String operation = String.valueOf(req.headers().get("operation"));
+			String operation = req.queryString("operation");
 			
 			res.text(operation);
 		});

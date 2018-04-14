@@ -11,7 +11,7 @@ public class IPCRequest implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private String id;
-	private Map<String, Object> query;
+	private Map<String, String> query;
 	private String content;
 	
 	
@@ -20,13 +20,13 @@ public class IPCRequest implements Serializable{
 		return getId();
 	}
 	
-	public Map<String, Object> headers(){
+	public Map<String, String> query(){
 		return query;
 	}
-	public Object get(String key) {
-		return (headers() == null) 
+	public String queryString(String key) {
+		return (query == null)
 				? null
-				: headers().get(key);
+				: String.valueOf(query.get(key));
 	}
 		
 	public String text() {
@@ -52,10 +52,10 @@ public class IPCRequest implements Serializable{
 		this.id = id;
 	}
 
-	public Map<String, Object> getQuery() {
+	public Map<String, String> getQuery() {
 		return query;
 	}
-	public void setQuery(Map<String, Object> query) {
+	public void setQuery(Map<String, String> query) {
 		this.query = query;
 	}
 
