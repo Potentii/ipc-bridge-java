@@ -21,9 +21,10 @@ public class IPCWorker{
 	@Nullable
 	private final PrintStream target;
 
-	private static final String END_MESSAGE_DELIMITER = "#msg-end";
+	private static final String PROCESS_ALIVE = "#proc-alive";
+	private static final String MESSAGE_DELIMITER = "#msg-end";
 	private static final Pattern MESSAGE_DELIMITER_REGEX =
-			Pattern.compile("\\n" + END_MESSAGE_DELIMITER, Pattern.MULTILINE);
+			Pattern.compile("\\n" + MESSAGE_DELIMITER, Pattern.MULTILINE);
 
 
 
@@ -57,7 +58,7 @@ public class IPCWorker{
 			responseJson = "{\"error\":{\"message\":\"Error while serializing the response\"}}";
 		}
 		
-		responseJson += "\n" + END_MESSAGE_DELIMITER + "\n";
+		responseJson += "\n" + MESSAGE_DELIMITER + "\n";
 		
 		return responseJson;
 	}
@@ -91,9 +92,6 @@ public class IPCWorker{
 	 * #msg-end
 	 */
 	public void listen(@Nullable final MessageHandler requestHandler){
-		// *Signaling that this bridge have started listening to requests:
-		listening = true;
-
 		// *Initializing the processor of the requests that will be received, using the given handler implementation:
 		final RequestProcessor requestProcessor = new RequestProcessor(requestHandler);
 		// *Initializing the unit that will be responsible to process each raw message:
@@ -103,6 +101,11 @@ public class IPCWorker{
 		final Scanner scanner = new Scanner(source);
 		// *Using the default delimiter rule, to separate each of the raw messages:
 		scanner.useDelimiter(MESSAGE_DELIMITER_REGEX);
+
+		target.print(PROCESS_ALIVE);
+
+		// *Signaling that this bridge have started listening to requests:
+		listening = true;
 		
 		// *Starting the listening loop:
 		while(listening){

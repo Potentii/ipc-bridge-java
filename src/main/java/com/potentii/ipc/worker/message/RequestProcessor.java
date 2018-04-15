@@ -18,7 +18,7 @@ public class RequestProcessor implements Processor<IncomingMessage, OutgoingMess
 
 	@Override
 	public OutgoingMessage process(IncomingMessage request){
-		OutgoingMessage response = new OutgoingMessage(request.id());
+		OutgoingMessage response = new OutgoingMessage(request.id()); // TODO check if ID is null
 		
 		if(requestHandler != null){
 			try{
