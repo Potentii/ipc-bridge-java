@@ -1,4 +1,4 @@
-package com.potentii.ipc.service.api;
+package com.potentii.ipc.worker.api;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -6,11 +6,11 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import com.potentii.ipc.Processor;
-import com.potentii.ipc.service.message.*;
+import com.potentii.ipc.worker.message.*;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 
-public class IPCBridge{
+public class IPCWorker{
 	/**
 	 * Whether or not this bridge is listening to requests
 	 */
@@ -29,13 +29,13 @@ public class IPCBridge{
 
 	/**
 	 * Prepares a new inter-process communication bridge
-	 * To start the communication flow, use the {@code listen(IPCRequestHandler)} method of the returned instance
+	 * To start the communication flow, use the {@code listen(MessageHandler)} method of the returned instance
 	 * @param source The origin of the messages, that is, the stream that the other process will write the
 	 *                  requests to (e.g. In most cases it will be {@code System.in})
 	 * @param target The destination of the messages, that is, the stream that the other process will read the
 	 *                  responses from (e.g. In most cases it will be {@code System.out})
 	 */
-	public IPCBridge(@NotNull InputStream source, @Nullable PrintStream target) {
+	public IPCWorker(@NotNull InputStream source, @Nullable PrintStream target) {
 		super();
 		if(source == null)
 			throw new IllegalArgumentException("The source stream must not be null");
@@ -65,7 +65,7 @@ public class IPCBridge{
 
 
 	/**
-	 * IPCRequest {
+	 * IncomingMessage {
 	 *    "id": "a7bf6a-eb6ffa",
 	 *    "query": {
 	 *       "operation": "123",
@@ -77,7 +77,7 @@ public class IPCBridge{
 	 * }
 	 * #msg-end
 	 * 
-	 * IPCResponse {
+	 * OutgoingMessage {
 	 *    "id": "a7bf6a-eb6ffa",
 	 *    "query": {
 	 *       "abc": 123,
@@ -90,7 +90,7 @@ public class IPCBridge{
 	 * }
 	 * #msg-end
 	 */
-	public void listen(@Nullable final IPCRequestHandler requestHandler){
+	public void listen(@Nullable final MessageHandler requestHandler){
 		// *Signaling that this bridge have started listening to requests:
 		listening = true;
 

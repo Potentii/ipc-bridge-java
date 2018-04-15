@@ -1,4 +1,4 @@
-package com.potentii.ipc.service.message;
+package com.potentii.ipc.worker.message;
 
 import java.io.IOException;
 
@@ -8,7 +8,7 @@ import com.potentii.ipc.Processor;
 public class MessageProcessor implements Processor<String, String>{
 
 	private final ObjectMapper mapper;
-	private final Processor<IPCRequest, IPCResponse> requestProcessor;
+	private final Processor<IncomingMessage, OutgoingMessage> requestProcessor;
 
 	
 
@@ -22,17 +22,17 @@ public class MessageProcessor implements Processor<String, String>{
 
 
 
-	private IPCRequest parseRequest(final String jsonRequest) throws RequestParseException{
+	private IncomingMessage parseRequest(final String jsonRequest) throws RequestParseException{
 		try{
 			// *Parsing the request object from JSON:
-			return mapper.readValue(jsonRequest, IPCRequest.class);
+			return mapper.readValue(jsonRequest, IncomingMessage.class);
 		} catch(IOException e){
 			throw new RequestParseException(e);
 		}
 	}
 
 
-	private String serializeResponse(final IPCResponse response) throws ResponseSerializeException{
+	private String serializeResponse(final OutgoingMessage response) throws ResponseSerializeException{
 		try{
 			// *Returning the serialized response as JSON:
 			return mapper.writeValueAsString(response);
@@ -46,10 +46,10 @@ public class MessageProcessor implements Processor<String, String>{
 	public String process(final String jsonRequest) throws RequestParseException, ResponseSerializeException {
 
 		// *Parsing the request object from JSON:
-		IPCRequest request = parseRequest(jsonRequest);
+		IncomingMessage request = parseRequest(jsonRequest);
 
 		// *Getting the processed response:
-		IPCResponse response = requestProcessor.process(request);
+		OutgoingMessage response = requestProcessor.process(request);
 
 		// *Returning the serialized response as JSON:
 		return serializeResponse(response);

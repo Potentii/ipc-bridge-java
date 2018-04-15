@@ -1,11 +1,11 @@
 package com.potentii;
 
-import com.potentii.ipc.service.api.IPCBridge;
+import com.potentii.ipc.worker.api.IPCWorker;
 
 public class Main{
 	
 	public static void main(String[] args){
-		IPCBridge bridge = new IPCBridge(System.in, System.out);
+		IPCWorker bridge = new IPCWorker(System.in, System.out);
 		
 		bridge.listen((req, res) -> {
 			String operation = req.queryString("operation");

@@ -1,4 +1,4 @@
-package com.potentii.ipc.service.message;
+package com.potentii.ipc.worker.message;
 
 
 public class ResponseSerializeException extends RuntimeException{

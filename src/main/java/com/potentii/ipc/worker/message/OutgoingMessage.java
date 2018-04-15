@@ -1,4 +1,4 @@
-package com.potentii.ipc.service.message;
+package com.potentii.ipc.worker.message;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 
-public class IPCResponse implements Serializable{
+public class OutgoingMessage implements Serializable{
 
 	/* ===========================
 	 * Fields
@@ -34,7 +34,7 @@ public class IPCResponse implements Serializable{
 	 * ===========================
 	 */
 
-	public IPCResponse(@NotNull final String id) {
+	public OutgoingMessage(@NotNull final String id) {
 		super();
 		if(id == null)
 			throw new IllegalArgumentException("The message id must not be null");
@@ -97,9 +97,9 @@ public class IPCResponse implements Serializable{
 
 
 	/**
-	 * Sets an error for this response
-	 *  Only set an error if this response may be signaled as failed
-	 * @param error The new error of this response
+	 * Sets an error for this message
+	 *  Only set an error if this message may be signaled as failed
+	 * @param error The new error of this message
 	 */
 	public void error(@Nullable final Throwable error) {
 		this.error = error;
@@ -107,16 +107,16 @@ public class IPCResponse implements Serializable{
 
 
 	/**
-	 * Sets the raw content of the response
-	 * @param content The content data of this response
+	 * Sets the raw content of the message
+	 * @param content The content data of this message
 	 */
 	public void text(@Nullable final String content) {
-		this.data = content;
+		data = content;
 	}
 
 
 	/**
-	 * Serializes and sets the content of the response as an object
+	 * Serializes and sets the content of the message as an object
 	 * @param obj The object that should be the content
 	 * @param <T> The type of the object
 	 * @throws ResponseSerializeException Whether an error occur when trying to serialize the new content
@@ -145,7 +145,11 @@ public class IPCResponse implements Serializable{
 	public String getId() {
 		return id;
 	}
-	
+
+	public Map<String, Object> getQuery() {
+		return query;
+	}
+
 	public Throwable getError() {
 		return error;
 	}
@@ -153,4 +157,5 @@ public class IPCResponse implements Serializable{
 	public Object getData() {
 		return data;
 	}
+
 }

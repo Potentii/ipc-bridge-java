@@ -1,6 +1,6 @@
 package com.potentii.ipc.test;
 
-import com.potentii.ipc.service.api.IPCBridge;
+import com.potentii.ipc.worker.api.IPCWorker;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +23,7 @@ public class RequestTest {
         final InputStream in = new ByteArrayInputStream(StandardCharsets.UTF_8.encode(messageToBeSent).array());
         final PrintStream out = new PrintStream(System.out);
 
-        final IPCBridge bridge = new IPCBridge(in, out);
+        final IPCWorker bridge = new IPCWorker(in, out);
 
         bridge.listen((req, res) -> {
             String testParam = req.queryString("testParam");
