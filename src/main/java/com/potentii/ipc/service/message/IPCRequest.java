@@ -5,65 +5,109 @@ import java.io.Serializable;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.istack.internal.NotNull;
 
 public class IPCRequest implements Serializable{
+
+	/* ===========================
+	 * Fields
+	 * ===========================
+	 */
 	
 	private static final long serialVersionUID = 1L;
-	
+
 	private String id;
-	private Map<String, String> query;
-	private String content;
-	
-	
-		
+	private Map<String, Object> query;
+	private String data;
+
+
+
+	/* ===========================
+	 * Public API methods
+	 * ===========================
+	 */
+
+	/**
+	 * Retrieves this message's identifier
+	 * @return The message identifier
+	 */
 	public String id() {
-		return getId();
+		return id;
 	}
-	
-	public Map<String, String> query(){
-		return query;
-	}
-	public String queryString(String key) {
+
+
+	/**
+	 * Retrieves the desired query parameter
+	 * @param key The parameter name
+	 * @return The parameter value, or null if it doesn't exist
+	 */
+	public Object query(@NotNull final String key) {
 		return (query == null)
 				? null
-				: String.valueOf(query.get(key));
+				: query.get(key);
 	}
-		
+
+
+	/**
+	 * Retrieves the desired query parameter as a string
+	 * @param key The parameter name
+	 * @return The parameter value, or null if it doesn't exist
+	 */
+	public String queryString(@NotNull final String key) {
+		// *Getting the query parameter as object first:
+		final Object value = query(key);
+
+		// *Converting it into a string if possible:
+		return (value == null)
+				? null
+				: String.valueOf(value);
+	}
+
+
+	/**
+	 * Reads the raw request content
+	 * @return The request content
+	 */
 	public String text() {
-		return content;
+		return data;
 	}
-	public <T> T json(Class<T> clazz) throws RequestParseException {
+
+
+	/**
+	 * Parses and retrieves the content data as an object
+	 * @param clazz The class that the content should be parsed to
+	 * @param <T> The type of the returned object
+	 * @return The parsed object
+	 * @throws RequestParseException Whether an error occur during the parse of the content
+	 */
+	public <T> T json(@NotNull final Class<T> clazz) throws RequestParseException {
 		try {
-			return (content == null) 
+			// *Re
+			return (text() == null)
 					? null 
-					: new ObjectMapper().readValue(content, clazz);
+					: new ObjectMapper().readValue(text(), clazz);
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw new RequestParseException(e);
 		}
 	}
-	
-	
 
-	public String getId() {
-		return id;
-	}
+
+
+	/* ===========================
+	 * Getters and setters
+	 * ===========================
+	 */
+
 	public void setId(String id) {
 		this.id = id;
 	}
 
-	public Map<String, String> getQuery() {
-		return query;
-	}
-	public void setQuery(Map<String, String> query) {
+	public void setQuery(Map<String, Object> query) {
 		this.query = query;
 	}
 
-	public String getContent() {
-		return content;
-	}
-	public void setContent(String content) {
-		this.content = content;
+	public void setData(String data) {
+		this.data = data;
 	}
 	
 }

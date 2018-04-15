@@ -1,14 +1,15 @@
 package com.potentii.ipc.service.message;
 
 import com.potentii.ipc.Processor;
+import com.sun.istack.internal.Nullable;
 
 public class RequestProcessor implements Processor<IPCRequest, IPCResponse> {
-	
+	@Nullable
 	private final IPCRequestHandler requestHandler;
 	
 	
 	
-	public RequestProcessor(IPCRequestHandler requestHandler) {
+	public RequestProcessor(@Nullable IPCRequestHandler requestHandler) {
 		super();
 		this.requestHandler = requestHandler;
 	}

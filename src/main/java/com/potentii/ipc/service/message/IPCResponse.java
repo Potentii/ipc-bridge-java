@@ -1,53 +1,147 @@
 package com.potentii.ipc.service.message;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 public class IPCResponse implements Serializable{
-	
+
+	/* ===========================
+	 * Fields
+	 * ===========================
+	 */
+
 	private static final long serialVersionUID = 1L;
-	
+
+	@NotNull
 	private String id;
-	private Map<String, String> query;
+	@Nullable
+	private Map<String, Object> query;
+	@Nullable
 	private Throwable error;
-	private Object content;
-	
-	
-	
-	public IPCResponse(String id) {
+	@Nullable
+	private Object data;
+
+
+
+	/* ===========================
+	 * Constructors
+	 * ===========================
+	 */
+
+	public IPCResponse(@NotNull final String id) {
 		super();
+		if(id == null)
+			throw new IllegalArgumentException("The message id must not be null");
 		this.id = id;
 		this.query = new HashMap<>();
 	}
-	
-	
-	
+
+
+
+	/* ===========================
+	 * Public API methods
+	 * ===========================
+	 */
+
+	/**
+	 * Retrieves this message's identifier
+	 * @return The message identifier
+	 */
 	public String id() {
 		return id;
 	}
-	
-	public String get(String key) {
-		return query.get(key);
+
+
+	/**
+	 * Retrieves the desired query parameter
+	 * @param key The parameter name
+	 * @return The parameter value, or null if it doesn't exist
+	 */
+	public Object query(@NotNull final String key) {
+		return (query == null)
+				? null
+				: query.get(key);
 	}
-	
-	public void error(Throwable error) {
+
+
+	/**
+	 * Retrieves the desired query parameter as a string
+	 * @param key The parameter name
+	 * @return The parameter value, or null if it doesn't exist
+	 */
+	public String queryString(@NotNull final String key) {
+		// *Getting the query parameter as object first:
+		final Object value = query(key);
+
+		// *Converting it into a string if possible:
+		return (value == null)
+				? null
+				: String.valueOf(value);
+	}
+
+
+	/**
+	 * Sets a query parameter value
+	 * @param key The parameter name
+	 * @param value The new parameter value
+	 */
+	public void query(@NotNull final String key, @Nullable final Object value) {
+		query.put(key, value);
+	}
+
+
+	/**
+	 * Sets an error for this response
+	 *  Only set an error if this response may be signaled as failed
+	 * @param error The new error of this response
+	 */
+	public void error(@Nullable final Throwable error) {
 		this.error = error;
 	}
-	
-	public void text(String content) {
-		this.content = content;
+
+
+	/**
+	 * Sets the raw content of the response
+	 * @param content The content data of this response
+	 */
+	public void text(@Nullable final String content) {
+		this.data = content;
 	}
-	public <T> void json(T obj) throws IOException {		
-		content = (obj == null) 
-				? null 
-				: new ObjectMapper().writeValueAsString(obj);
+
+
+	/**
+	 * Serializes and sets the content of the response as an object
+	 * @param obj The object that should be the content
+	 * @param <T> The type of the object
+	 * @throws ResponseSerializeException Whether an error occur when trying to serialize the new content
+	 */
+	public <T> void json(@Nullable final T obj) throws ResponseSerializeException {
+		try {
+			// *Serializing the given object as a JSON string if possible:
+			final String data = (obj == null)
+                    ? null
+                    : new ObjectMapper().writeValueAsString(obj);
+
+			// *Writing the serialized string into the content:
+			text(data);
+		} catch (JsonProcessingException e) {
+			throw new ResponseSerializeException(e);
+		}
 	}
-	
-		
-	
+
+
+
+	/* ===========================
+	 * Getters and setters
+	 * ===========================
+	 */
+
 	public String getId() {
 		return id;
 	}
@@ -56,7 +150,7 @@ public class IPCResponse implements Serializable{
 		return error;
 	}
 
-	public Object getContent() {
-		return content;
+	public Object getData() {
+		return data;
 	}
 }
