@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.potentii.ipc.Processor;
+import com.sun.istack.internal.NotNull;
 
 public class MessageProcessor implements Processor<String, String>{
 
@@ -42,8 +43,15 @@ public class MessageProcessor implements Processor<String, String>{
 	}
 
 
+	/**
+	 * Processes a message and provide a response for it
+	 * @param jsonRequest The raw JSON request body
+	 * @return The response for the request
+	 * @throws RequestParseException
+	 * @throws ResponseSerializeException
+	 */
 	@Override
-	public String process(final String jsonRequest) throws RequestParseException, ResponseSerializeException {
+	public String process(@NotNull final String jsonRequest) throws RequestParseException, ResponseSerializeException {
 
 		// *Parsing the request object from JSON:
 		IncomingMessage request = parseRequest(jsonRequest);

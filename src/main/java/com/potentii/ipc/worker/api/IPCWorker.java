@@ -10,19 +10,41 @@ import com.potentii.ipc.worker.message.*;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 
+
+
+/**
+ * @author Guilherme Reginaldo Ruella
+ */
 public class IPCWorker{
 	/**
 	 * Whether or not this bridge is listening to requests
 	 */
 	private boolean listening;
 
+
+	/**
+	 * The stream from which the messages will be received
+	 */
 	@NotNull
 	private final InputStream source;
+	/**
+	 * The output stream, where the responses will be written to
+	 */
 	@Nullable
 	private final PrintStream target;
 
+
+	/**
+	 * The code that signals that a worker process has been started
+	 */
 	private static final String PROCESS_ALIVE = "#proc-alive";
+	/**
+	 * The code that signals that a message stream reach its end and should be processed
+	 */
 	private static final String MESSAGE_DELIMITER = "#msg-end";
+	/**
+	 * A pattern to split the input stream whenever a message gets fully sent
+	 */
 	private static final Pattern MESSAGE_DELIMITER_REGEX =
 			Pattern.compile("\\n" + MESSAGE_DELIMITER, Pattern.MULTILINE);
 
@@ -44,52 +66,42 @@ public class IPCWorker{
 		this.source = source;
 		this.target = target;
 	}
-	
-	
-	
+
+
+	/**
+	 * Processes the request message and builds the response, using the provided message processor implementation
+	 * @param input The request message (The complete raw message body without the delimiters)
+	 * @param messageProcessor An processor implementation that will process the request and provide a response body,
+	 *                            without the delimiters
+	 * @return The message response, ready to be sent
+	 */
 	private String processInput(String input, Processor<String, String> messageProcessor) {
+		// *Initializing the response recipient:
 		String responseJson;
 		
 		try {
+			// Trying to process the received request message:
 			responseJson = messageProcessor.process(input);
 		} catch (RequestParseException e) {
-			responseJson = "{\"error\":{\"message\":\"Error while parsing the request\"}}";
+			responseJson = "{\"error\":{\"message\":\"Error while parsing the request: " + e.getMessage() + "\"}}";
 		} catch (ResponseSerializeException e) {
-			responseJson = "{\"error\":{\"message\":\"Error while serializing the response\"}}";
+			responseJson = "{\"error\":{\"message\":\"Error while serializing the response: " + e.getMessage() + "\"}}";
 		}
-		
+
+		// *Appending the message delimiter in the response
 		responseJson += "\n" + MESSAGE_DELIMITER + "\n";
-		
+
+		// *Returning the response message:
 		return responseJson;
 	}
 	
 
-
 	/**
-	 * IncomingMessage {
-	 *    "id": "a7bf6a-eb6ffa",
-	 *    "query": {
-	 *       "operation": "123",
-	 *       "def": 456,
-	 *       "ghi": null,
-	 *       "jkl": "hello world"
-	 *    },
-	 *    "content": ""
-	 * }
-	 * #msg-end
-	 * 
-	 * OutgoingMessage {
-	 *    "id": "a7bf6a-eb6ffa",
-	 *    "query": {
-	 *       "abc": 123,
-	 *       "def": 456,
-	 *       "ghi": null,
-	 *       "jkl": "hello world"
-	 *    },
-	 *    "content": {},
-	 *    "error": {}
-	 * }
-	 * #msg-end
+	 * Starts the listening for requests from the provided streams.
+	 * Calling this method will block the current thread, in order to execute the listening loop.
+	 * When a new request is received, the provided handler will also be called synchronously in this same thread.
+	 * @param requestHandler A handler implementation that should process the received request and change the response
+	 *                          to be sent back to the master process
 	 */
 	public void listen(@Nullable final MessageHandler requestHandler){
 		// *Initializing the processor of the requests that will be received, using the given handler implementation:
@@ -102,6 +114,7 @@ public class IPCWorker{
 		// *Using the default delimiter rule, to separate each of the raw messages:
 		scanner.useDelimiter(MESSAGE_DELIMITER_REGEX);
 
+		// *Signaling that this worker process is ready to receive requests:
 		target.print(PROCESS_ALIVE);
 
 		// *Signaling that this bridge have started listening to requests:
@@ -110,8 +123,10 @@ public class IPCWorker{
 		// *Starting the listening loop:
 		while(listening){
 
+			// *Waiting for new input in the source stream:
 			final String inputData = scanner.next();
 
+			// *Processing the received input:
 			target.print(processInput(inputData, messageProcessor));
 		}
 	}
