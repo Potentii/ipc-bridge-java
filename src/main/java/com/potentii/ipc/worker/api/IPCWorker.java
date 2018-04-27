@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 
 import com.potentii.ipc.Processor;
 import com.potentii.ipc.worker.message.*;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 
 

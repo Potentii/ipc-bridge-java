@@ -1,7 +1,7 @@
 package com.potentii.ipc.worker.message;
 
 import com.potentii.ipc.Processor;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class RequestProcessor implements Processor<IncomingMessage, OutgoingMessage> {
 	@Nullable

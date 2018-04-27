@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
-@RunWith(Suite.class)
+//@RunWith(Suite.class)
 public class RequestTest {
 
 

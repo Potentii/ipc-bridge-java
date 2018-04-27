@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.potentii.ipc.Processor;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 public class MessageProcessor implements Processor<String, String>{
 
